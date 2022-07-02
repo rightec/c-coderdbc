@@ -30,8 +30,8 @@ const char* extend_func_body =
 
 CiMainGenerator::CiMainGenerator()
 {
-  sigprt = new CSigPrinter;
-  fwriter = new FileWriter;
+  sigprt = std::make_unique<CSigPrinter>();
+  fwriter = std::make_unique<FileWriter>();
 }
 
 void CiMainGenerator::Generate(DbcMessageList_t& dlist, const FsDescriptor_t& fsd)

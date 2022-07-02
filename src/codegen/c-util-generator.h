@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "types/message.h"
 #include "fs-creator.h"
 #include "filewriter.h"
@@ -36,13 +37,13 @@ class CiUtilGenerator {
   std::vector<MessageDescriptor_t*> both;
 
   // to file writer
-  FileWriter* tof;
+  std::unique_ptr<FileWriter> tof;
+  std::unique_ptr<ConditionalTree> condtree;
 
   std::string code_drvname;
   std::string file_drvname;
 
   const FsDescriptor_t* fdesc;
-  ConditionalTree* condtree;
   const DbcMessageList_t* p_dlist;
 
   bool treestarted;

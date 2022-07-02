@@ -14,8 +14,8 @@ static const std::string closeguard = "#ifdef __cplusplus\n\
 CiUtilGenerator::CiUtilGenerator()
 {
   Clear();
-  tof = new FileWriter;
-  condtree = new ConditionalTree;
+  tof = std::make_unique<FileWriter>();
+  condtree = std::make_unique<ConditionalTree>();
 }
 
 void CiUtilGenerator::Clear()

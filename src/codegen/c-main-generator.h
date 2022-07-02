@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <memory>
 #include "c-sigprinter.h"
 #include "filewriter.h"
 #include "../types/message.h"
@@ -33,9 +34,9 @@ class CiMainGenerator {
  private:
   std::vector<std::string> tmpvect;
 
-  CSigPrinter* sigprt;
+  std::unique_ptr<CSigPrinter> sigprt;
 
-  FileWriter* fwriter;
+  std::unique_ptr<FileWriter> fwriter;
 
   const FsDescriptor_t* fdesc;
 
