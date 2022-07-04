@@ -37,6 +37,7 @@ std::string StrPrintLoc(const char* format, ...)
   vsnprintf(work_buff, N, format, args);
 
   va_end(args);
-  // convert buffer to string
+
+  // make string from local array
   return work_buff;
 }

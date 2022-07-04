@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <regex>
 #include "helpers/formatter.h"
+#include "mon-generator.h"
 
 #include "c-main-generator.h"
 
@@ -474,14 +475,11 @@ from each Unpack_*name* function to detect DBC related errors\n\
 It is the user responsibility to defined these functions in the\n\
 separated .c file. If it won't be done the linkage error will happen\n*/", 2);
 
-  for (size_t num = 0; num < sigprt->sigs_expr.size(); num++)
-  {
-    auto msg = &(sigprt->sigs_expr[num]->msg);
-    fwriter->AppendLine(StrPrint("void FMon_%s_%s(FrameMonitor_t* _mon, uint32_t msgid);",
-        msg->Name.c_str(), fdesc->drvname.c_str()));
-  }
+  MonGenerator mongen;
 
-  fwriter->AppendLine(StrPrint("\n#endif // %s", fdesc->usemon_def.c_str()), 2);
+  mongen.FillHeader((*fwriter), sigprt->sigs_expr, fdesc->drvname);
+
+  fwriter->AppendLine(StrPrint("#endif // %s", fdesc->usemon_def.c_str()), 2);
 
   fwriter->AppendLine("#ifdef __cplusplus\n}\n#endif");
 
@@ -506,13 +504,9 @@ Put the monitor function content here, keep in mind -\n\
 next generation will completely clear all manually added code (!)\n\
 */\n");
 
-  for (size_t num = 0; num < sigprt->sigs_expr.size(); num++)
-  {
-    auto msg = &(sigprt->sigs_expr[num]->msg);
-    fwriter->AppendLine(
-      StrPrint("void FMon_%s_%s(FrameMonitor_t* _mon, uint32_t msgid)\n{\n  (void)_mon;\n  (void)msgid;\n}\n",
-        msg->Name.c_str(), fdesc->drvname.c_str()));
-  }
+  MonGenerator mongen;
+
+  mongen.FillSource((*fwriter), sigprt->sigs_expr, fdesc->drvname);
 
   fwriter->AppendLine(StrPrint("#endif // %s", fdesc->usemon_def.c_str()));
 
