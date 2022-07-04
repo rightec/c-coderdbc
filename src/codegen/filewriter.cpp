@@ -29,20 +29,24 @@ void FileWriter::Flush(const std::string& fpath)
   Flush();
 }
 
+void FileWriter::AppendLine(uint32_t empty_lines)
+{
+  while (empty_lines--)
+  {
+    AppendText("\n");
+  }
+}
+
 void FileWriter::AppendText(const char* text)
 {
   std::string str = text;
   AppendText(str);
 }
 
-void FileWriter::AppendLine(const char* text, int32_t post_empty_lines)
+void FileWriter::AppendLine(const char* text, uint32_t post_empty_lines)
 {
   AppendText(text);
-
-  for (int32_t i = 0; i < post_empty_lines; i++)
-  {
-    AppendText("\n");
-  }
+  AppendLine(post_empty_lines);
 }
 
 
