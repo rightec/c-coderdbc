@@ -442,7 +442,25 @@ void CiMainGenerator::Gen_ConfigHeader()
   fwriter->AppendLine("  In unpack function checksum signal is checked with calculated.");
   fwriter->AppendLine("  (result may be tested in dedicated Fmon_*** function). */");
   fwriter->AppendLine("");
-  fwriter->AppendLine(StrPrint("/* #define %s */", fdesc->usecsm_def.c_str()), 2);
+  fwriter->AppendLine(StrPrint("/* #define %s */", fdesc->usecsm_def.c_str()), 3);
+  fwriter->AppendLine("/* ------------------------------------------------------------------------- *");
+  fwriter->AppendLine("  FMon handling model can be build in two ways: ");
+  fwriter->AppendLine("");
+  fwriter->AppendLine("  1 - Default. In this case when specific frame unpack is called the ");
+  fwriter->AppendLine("  specific FMon_{Frame name}_{driver name} functoin will be called.");
+  fwriter->AppendLine("  User's code scope has to define each of these functions. Each function is");
+  fwriter->AppendLine("  responsible for the error handling of one frame");
+  fwriter->AppendLine("");
+  fwriter->AppendLine("  2 - MONO. In this case there is only one function to perform any frame ");
+  fwriter->AppendLine("  monitoring. This function has to be implemented in the user's code scope.");
+  fwriter->AppendLine("  This function is named as FMon_MONO_{driver name}. It takes frame id");
+  fwriter->AppendLine("  which can be used for selection of the logic for a frame monitoring.");
+  fwriter->AppendLine("  This mode costs a bit more in runtime but when you often edit you DBC and you ");
+  fwriter->AppendLine("  have more than one project it could be more maintanable (there is");
+  fwriter->AppendLine("  no necessity to replace source code)");
+  fwriter->AppendLine("");
+  fwriter->AppendLine("  For using MONO way uncomment line below */");
+  fwriter->AppendLine(StrPrint("/* #define %s */", fdesc->usemonofmon_def.c_str(), 2));
 
   fwriter->Flush(fdesc->confdir + '/' + fdesc->drvname + "-config.h");
 }
