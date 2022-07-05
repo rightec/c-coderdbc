@@ -14,6 +14,8 @@ class FileWriter {
   void Flush();
   void Flush(const std::string& filename);
 
+  int32_t Append(const char* frmt, ...);
+
   void AppendText(const char* text);
   void AppendLine(const char* text, uint32_t post_empty_lines = 1);
 
