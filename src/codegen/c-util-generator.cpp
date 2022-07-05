@@ -27,7 +27,7 @@ void CiUtilGenerator::Clear()
 }
 
 
-void CiUtilGenerator::Generate(DbcMessageList_t& dlist, const FsDescriptor_t& fsd,
+void CiUtilGenerator::Generate(DbcMessageList_t& dlist, const AppSettings_t& fsd,
   const MsgsClassification& groups, const std::string& drvname)
 {
   Clear();
@@ -84,7 +84,8 @@ void CiUtilGenerator::Generate(DbcMessageList_t& dlist, const FsDescriptor_t& fs
     return a->MsgID < b->MsgID;
   });
 
-  fdesc = &fsd;
+  fdesc = &fsd.file;
+  gdesc = &fsd.gen;
 
   // print header for util code
   PrintHeader();
@@ -97,9 +98,9 @@ void CiUtilGenerator::PrintHeader()
 {
   tof->Flush();
 
-  if (fdesc->start_info.size() > 0)
+  if (gdesc->start_info.size() > 0)
   {
-    tof->AppendLine("// " + std::regex_replace(fdesc->start_info, std::regex("\n"), "\n// "));
+    tof->AppendLine("// " + std::regex_replace(gdesc->start_info, std::regex("\n"), "\n// "));
   }
 
   tof->AppendLine("#pragma once", 2);
@@ -127,7 +128,7 @@ void CiUtilGenerator::PrintHeader()
       tof->AppendLine(StrPrint("  %s_t %s;", m->Name.c_str(), m->Name.c_str()));
     }
 
-    tof->AppendLine(StrPrint("} %s_rx_t;", fdesc->drvname.c_str()), 2);
+    tof->AppendLine(StrPrint("} %s_rx_t;", gdesc->drvname.c_str()), 2);
   }
 
   if (tx.size() == 0)
@@ -144,32 +145,32 @@ void CiUtilGenerator::PrintHeader()
       tof->AppendLine(StrPrint("  %s_t %s;", m->Name.c_str(), m->Name.c_str()));
     }
 
-    tof->AppendLine(StrPrint("} %s_tx_t;", fdesc->drvname.c_str()), 2);
+    tof->AppendLine(StrPrint("} %s_tx_t;", gdesc->drvname.c_str()), 2);
   }
 
   if (rx.size() > 0)
   {
     // receive function necessary only when more than 0 rx messages were mapped
     tof->AppendLine(StrPrint("uint32_t %s_Receive(%s_rx_t* m, const uint8_t* d, uint32_t msgid, uint8_t dlc);",
-        fdesc->drvname.c_str(), fdesc->drvname.c_str()), 2);
+        gdesc->drvname.c_str(), gdesc->drvname.c_str()), 2);
   }
 
   // print extern for super structs
   if (rx.size() > 0 || tx.size() > 0)
   {
-    tof->AppendLine(StrPrint("#ifdef __DEF_%s__", fdesc->DRVNAME.c_str()), 2);
+    tof->AppendLine(StrPrint("#ifdef __DEF_%s__", gdesc->DRVNAME.c_str()), 2);
 
     if (rx.size() > 0)
     {
-      tof->AppendLine(StrPrint("extern %s_rx_t %s_rx;", fdesc->drvname.c_str(), fdesc->drvname.c_str()), 2);
+      tof->AppendLine(StrPrint("extern %s_rx_t %s_rx;", gdesc->drvname.c_str(), gdesc->drvname.c_str()), 2);
     }
 
     if (tx.size() > 0)
     {
-      tof->AppendLine(StrPrint("extern %s_tx_t %s_tx;", fdesc->drvname.c_str(), fdesc->drvname.c_str()), 2);
+      tof->AppendLine(StrPrint("extern %s_tx_t %s_tx;", gdesc->drvname.c_str(), gdesc->drvname.c_str()), 2);
     }
 
-    tof->AppendLine(StrPrint("#endif // __DEF_%s__", fdesc->DRVNAME.c_str()), 2);
+    tof->AppendLine(StrPrint("#endif // __DEF_%s__", gdesc->DRVNAME.c_str()), 2);
   }
 
   tof->AppendLine(closeguard.c_str());
@@ -179,37 +180,37 @@ void CiUtilGenerator::PrintHeader()
 
 void CiUtilGenerator::PrintSource()
 {
-  if (fdesc->start_info.size() > 0)
+  if (gdesc->start_info.size() > 0)
   {
-    tof->AppendLine("// " + std::regex_replace(fdesc->start_info, std::regex("\n"), "\n// "));
+    tof->AppendLine("// " + std::regex_replace(gdesc->start_info, std::regex("\n"), "\n// "));
   }
 
   tof->AppendLine(StrPrint("#include \"%s\"", fdesc->util_h.fname.c_str()), 2);
 
   tof->AppendLine("// DBC file version");
   tof->AppendLine(StrPrint("#if (%s != (%uU)) || (%s != (%uU))",
-      fdesc->verhigh_def.c_str(), p_dlist->ver.hi, fdesc->verlow_def.c_str(), p_dlist->ver.low));
+      gdesc->verhigh_def.c_str(), p_dlist->ver.hi, gdesc->verlow_def.c_str(), p_dlist->ver.low));
 
   tof->AppendLine(StrPrint("#error The %s binutil source file has inconsistency with core dbc lib!",
-      fdesc->DRVNAME.c_str()));
+      gdesc->DRVNAME.c_str()));
   tof->AppendLine("#endif", 2);
 
   // optional RX and TX struct allocations
   if (rx.size() > 0 || tx.size() > 0)
   {
-    tof->AppendLine(StrPrint("#ifdef __DEF_%s__", fdesc->DRVNAME.c_str()), 2);
+    tof->AppendLine(StrPrint("#ifdef __DEF_%s__", gdesc->DRVNAME.c_str()), 2);
 
     if (rx.size() > 0)
     {
-      tof->AppendLine(StrPrint("%s_rx_t %s_rx;", fdesc->drvname.c_str(), fdesc->drvname.c_str()), 2);
+      tof->AppendLine(StrPrint("%s_rx_t %s_rx;", gdesc->drvname.c_str(), gdesc->drvname.c_str()), 2);
     }
 
     if (tx.size() > 0)
     {
-      tof->AppendLine(StrPrint("%s_tx_t %s_tx;", fdesc->drvname.c_str(), fdesc->drvname.c_str()), 2);
+      tof->AppendLine(StrPrint("%s_tx_t %s_tx;", gdesc->drvname.c_str(), gdesc->drvname.c_str()), 2);
     }
 
-    tof->AppendLine(StrPrint("#endif // __DEF_%s__", fdesc->DRVNAME.c_str()), 2);
+    tof->AppendLine(StrPrint("#endif // __DEF_%s__", gdesc->DRVNAME.c_str()), 2);
   }
 
   if (rx.size() > 0)
@@ -221,7 +222,7 @@ void CiUtilGenerator::PrintSource()
     auto tree = FillTreeLevel(rx, 0, static_cast<int32_t>(rx.size()));
 
     tof->AppendLine(StrPrint("uint32_t %s_Receive(%s_rx_t* _m, const uint8_t* _d, uint32_t _id, uint8_t dlc_)",
-        fdesc->drvname.c_str(), fdesc->drvname.c_str()));
+        gdesc->drvname.c_str(), gdesc->drvname.c_str()));
 
     tof->AppendLine("{");
     tof->AppendLine(" uint32_t recid = 0;");

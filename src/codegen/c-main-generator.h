@@ -12,7 +12,7 @@ class CiMainGenerator {
  public:
   CiMainGenerator();
 
-  void Generate(DbcMessageList_t& dlist, const FsDescriptor_t& fsd);
+  void Generate(DbcMessageList_t& dlist, const AppSettings_t& fsd);
 
  private:
 
@@ -38,7 +38,7 @@ class CiMainGenerator {
 
   std::unique_ptr<FileWriter> fwriter;
 
-  const FsDescriptor_t* fdesc;
+  const AppSettings_t* fdesc;
 
   const DbcMessageList_t* p_dlist;
 };

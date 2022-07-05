@@ -147,16 +147,16 @@ void CoderApp::GenerateCode()
       std::string util_name = nodes[node] + "_" + drvname.value;
 
       // set new driver name for current node
-      fscreator->FS.drvname = str_tolower(util_name);
-      fscreator->FS.DRVNAME = str_toupper(fscreator->FS.drvname);
-      fscreator->FS.util_c.dir = fscreator->FS.utildir;
-      fscreator->FS.util_h.dir = fscreator->FS.utildir;
+      fscreator->FS.gen.drvname = str_tolower(util_name);
+      fscreator->FS.gen.DRVNAME = str_toupper(fscreator->FS.gen.drvname);
+      fscreator->FS.file.util_c.dir = fscreator->FS.file.utildir;
+      fscreator->FS.file.util_h.dir = fscreator->FS.file.utildir;
 
-      fscreator->FS.util_h.fname = str_tolower(fscreator->FS.drvname + "-binutil.h");
-      fscreator->FS.util_h.fpath = fscreator->FS.utildir + "/" + fscreator->FS.util_h.fname;
+      fscreator->FS.file.util_h.fname = str_tolower(fscreator->FS.gen.drvname + "-binutil.h");
+      fscreator->FS.file.util_h.fpath = fscreator->FS.file.utildir + "/" + fscreator->FS.file.util_h.fname;
 
-      fscreator->FS.util_c.fname = str_tolower(fscreator->FS.drvname + "-binutil.c");
-      fscreator->FS.util_c.fpath = fscreator->FS.utildir + "/" + fscreator->FS.util_c.fname;
+      fscreator->FS.file.util_c.fname = str_tolower(fscreator->FS.gen.drvname + "-binutil.c");
+      fscreator->FS.file.util_c.fpath = fscreator->FS.file.utildir + "/" + fscreator->FS.file.util_c.fname;
 
       MsgsClassification groups;
 
